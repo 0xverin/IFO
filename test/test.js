@@ -17,6 +17,7 @@ describe("DayOfRightsReferral", function () {
     var DayOfRightsReferral;
     var IFO;
     var PartnerReward;
+    var BASEToken;
 
     it("init params", async function () {
         [deployer, ...users] = await ethers.getSigners();
@@ -25,6 +26,9 @@ describe("DayOfRightsReferral", function () {
     it("deploy", async function () {
         const WETH9Instance = await ethers.getContractFactory("WETH9");
         WETH9 = await WETH9Instance.deploy();
+
+        const BASETokenInstance = await ethers.getContractFactory("BASEToken");
+        BASEToken = await BASETokenInstance.deploy();
 
         const USDTInstance = await ethers.getContractFactory("USDT");
         USDT = await USDTInstance.deploy();
@@ -42,7 +46,6 @@ describe("DayOfRightsReferral", function () {
             18,
             users[4].address,
             users[4].address,
-
             USDT.address,
             UniswapV2Factory.address,
             UniswapV2Router02.address,
@@ -100,6 +103,8 @@ describe("DayOfRightsReferral", function () {
     it("approve", async function () {
         await USDT.approve(IFO.address, MaxUint256);
         await USDT.approve(DayOfRightsReferral.address, MaxUint256);
+        await USDT.approve(UniswapV2Router02.address, MaxUint256);
+        await DORToken.approve(UniswapV2Router02.address, MaxUint256);
 
         for (let index = 0; index < 10; index++) {
             await USDT.transfer(users[index].address, expandTo18Decimals(1000));
@@ -107,7 +112,7 @@ describe("DayOfRightsReferral", function () {
         }
     });
 
-    it("setup test", async function () {
+    it("setup", async function () {
         await DORToken.setMinner(IFO.address, true);
         await DORToken.setMinner(DayOfRightsReferral.address, true);
         await DayOfRightsClubPackage.addMinner(IFO.address);
@@ -115,6 +120,25 @@ describe("DayOfRightsReferral", function () {
         await DayOfRightsClub.addMinner(DayOfRightsReferral.address);
         await BlockhashMgr.setCaller(DayOfRightsClubPackage.address, true);
         await DayOfRightsReferral.setCaller(IFO.address, true);
+
+        //collect start
+        await IFO.allowCollectReward();
+    });
+    it("addLiquidity", async function () {
+        // console.log(await UniswapV2Factory.INIT_CODE_PAIR_HASH());
+        await IFO.shop(1);
+        await IFO.collect();
+        await DORToken.setCanTransfer(true);
+        await UniswapV2Router02.addLiquidity(
+            USDT.address,
+            DORToken.address,
+            expandTo18Decimals(10),
+            expandTo18Decimals(10),
+            expandTo18Decimals(1),
+            expandTo18Decimals(1),
+            deployer.address,
+            Math.floor(Date.now() / 1000) + 100,
+        );
     });
 
     it("query before", async function () {

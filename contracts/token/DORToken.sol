@@ -585,6 +585,7 @@ contract DORToken is ERC20, Ownable {
             canTransfer || whitelist[sender] || whitelist[recipient],
             "can not transfer"
         );
+
         return super.transferFrom(sender, recipient, amount);
     }
 
