@@ -8,9 +8,9 @@ import "../interfaces/IDORToken.sol";
 import "../interfaces/IDayOfRightsClubPackage.sol";
 import "../interfaces/IDayOfRightsClub.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "hardhat/console.sol";
 
 abstract contract Referral is IReferral {
-    
     mapping(address => address) internal _referrers;
     mapping(address => address[]) internal _recommended;
 
@@ -61,15 +61,15 @@ abstract contract Referral is IReferral {
 
 contract DayOfRightsReferral is Referral, SafeOwnable {
     using SafeERC20 for IERC20;
-    uint public bindReward;
+    uint256 public bindReward;
     IERC20 public USDTToken;
     IDORToken public DORToken;
     IDayOfRightsClubPackage public dayOfRightsClubPackage;
     IDayOfRightsClub public dayOfRightsClub;
     address public vault;
-    uint public stakeAmount = 288 * 10**18;
+    uint256 public stakeAmount = 288 * 10**18;
     mapping(address => bool) public isCaller;
-    mapping(address => uint) public validReferral;
+    mapping(address => uint256) public validReferral;
     mapping(address => bool) public isValidUser;
     mapping(address => bool) public isPartnerReward;
     mapping(address => bool) public _isPartner;
@@ -109,11 +109,11 @@ contract DayOfRightsReferral is Referral, SafeOwnable {
         vault = _vault;
     }
 
-    function setBindReward(uint _reward) external onlyOwner {
+    function setBindReward(uint256 _reward) external onlyOwner {
         bindReward = _reward;
     }
 
-    function setStakeAmount(uint _stakeAmount) external onlyOwner {
+    function setStakeAmount(uint256 _stakeAmount) external onlyOwner {
         stakeAmount = _stakeAmount;
     }
 
@@ -130,7 +130,6 @@ contract DayOfRightsReferral is Referral, SafeOwnable {
             address referrer = _referrers[account];
             if (referrer != address(0)) {
                 validReferral[referrer] += 1;
-
                 partnerReward(referrer);
             }
         }

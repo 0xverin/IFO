@@ -8,27 +8,28 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "../interfaces/IDayOfRightsClubPackage.sol";
 import "../interfaces/IDORToken.sol";
 import "../interfaces/IReferral.sol";
+import "hardhat/console.sol";
 
 contract IFO is SafeOwnable {
     using SafeERC20 for IERC20;
 
     IDayOfRightsClubPackage public dayOfRightsClubPackage;
-    
+
     IERC20 public USDTToken;
     IDORToken public DORToken;
     IReferral public referral;
     address public vault;
     bool public isAllowCollect;
-    mapping(uint => uint) public packagePrice;
-    mapping(uint => uint) public packageRewardToken;
-    mapping(address => uint) public pendingReward;
-    mapping(address => mapping(uint => bool)) public isOperated;
+    mapping(uint256 => uint256) public packagePrice;
+    mapping(uint256 => uint256) public packageRewardToken;
+    mapping(address => uint256) public pendingReward;
+    mapping(address => mapping(uint256 => bool)) public isOperated;
 
     event NewVault(address oldVault, address newVault);
-    event Shop(address account, uint _type);
-    event NewPackageReward(uint _type, uint reward);
-    event NewPackagePrice(uint _type, uint price);
-    event Collect(address account, uint reward);
+    event Shop(address account, uint256 _type);
+    event NewPackageReward(uint256 _type, uint256 reward);
+    event NewPackagePrice(uint256 _type, uint256 price);
+    event Collect(address account, uint256 reward);
 
     constructor(
         address _vault,
@@ -64,12 +65,12 @@ contract IFO is SafeOwnable {
         isAllowCollect = false;
     }
 
-    function setPackagePrice(uint _type, uint _price) external onlyOwner {
+    function setPackagePrice(uint256 _type, uint256 _price) external onlyOwner {
         packagePrice[_type] = _price;
         emit NewPackagePrice(_type, _price);
     }
 
-    function setPackageRewardToken(uint _type, uint _reward)
+    function setPackageRewardToken(uint256 _type, uint256 _reward)
         external
         onlyOwner
     {
@@ -83,17 +84,21 @@ contract IFO is SafeOwnable {
         vault = _vault;
     }
 
-    function shop(uint _type) external {
+    function shop(uint256 _type) external {
         require(!isOperated[msg.sender][_type], "limit one purchase per type");
         require(packagePrice[_type] > 0, "no such type");
         isOperated[msg.sender][_type] = true;
         USDTToken.safeTransferFrom(msg.sender, vault, packagePrice[_type]);
-        uint rewardToken = packageRewardToken[_type];
+        uint256 rewardToken = packageRewardToken[_type];
+
         pendingReward[msg.sender] = pendingReward[msg.sender] + rewardToken;
+
         dayOfRightsClubPackage.mint(msg.sender, _type);
+
         referral.addValidReferral(msg.sender);
 
         address referrer = referral.referrers(msg.sender);
+
         if (referral.isPartner(referrer)) {
             pendingReward[referrer] =
                 pendingReward[referrer] +
@@ -104,7 +109,7 @@ contract IFO is SafeOwnable {
 
     function collect() external {
         require(isAllowCollect, "Receive not yet developed");
-        uint pending = pendingReward[msg.sender];
+        uint256 pending = pendingReward[msg.sender];
         DORToken.mint(msg.sender, pending);
         pendingReward[msg.sender] = 0;
         emit Collect(msg.sender, pending);

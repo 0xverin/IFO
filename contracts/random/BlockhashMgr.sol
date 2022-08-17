@@ -4,9 +4,9 @@ pragma solidity 0.7.6;
 
 import "../core/SafeOwnable.sol";
 import "../interfaces/IBlockhashMgr.sol";
+import "hardhat/console.sol";
 
 contract BlockhashMgr is IBlockhashMgr, SafeOwnable {
-    
     mapping(uint256 => bytes32) public blockInfo;
 
     uint256 public preBlockNum = block.number;
