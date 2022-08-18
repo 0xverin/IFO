@@ -44,8 +44,8 @@ describe("DayOfRightsReferral", function () {
             "DOR Token",
             "DOR",
             18,
-            users[4].address,
-            users[4].address,
+            deployer.address,
+            deployer.address,
             USDT.address,
             UniswapV2Factory.address,
             UniswapV2Router02.address,
@@ -70,14 +70,14 @@ describe("DayOfRightsReferral", function () {
         DayOfRightsReferral = await DayOfRightsReferralInstance.deploy(
             DayOfRightsClub.address,
             DayOfRightsClubPackage.address,
-            users[4].address,
+            deployer.address,
             USDT.address,
             DORToken.address,
         );
 
         const IFOInstance = await ethers.getContractFactory("IFO");
         IFO = await IFOInstance.deploy(
-            users[4].address,
+            deployer.address,
             USDT.address,
             DORToken.address,
             DayOfRightsClubPackage.address,
@@ -109,10 +109,13 @@ describe("DayOfRightsReferral", function () {
         for (let index = 0; index < 10; index++) {
             await USDT.transfer(users[index].address, expandTo18Decimals(1000));
             await USDT.connect(users[index]).approve(IFO.address, MaxUint256);
+            await DORToken.connect(users[index]).approve(UniswapV2Router02.address, MaxUint256);
         }
     });
 
     it("setup", async function () {
+        //createDispatchHandle
+        await DayOfRightsClub.createDispatchHandle(DORToken.address);
         await DORToken.setMinner(IFO.address, true);
         await DORToken.setMinner(DayOfRightsReferral.address, true);
         await DayOfRightsClubPackage.addMinner(IFO.address);
@@ -142,25 +145,51 @@ describe("DayOfRightsReferral", function () {
     });
 
     it("query before", async function () {
-        console.log(await DayOfRightsClubPackage.totalSupply());
-        console.log(await DayOfRightsClub.totalSupply());
-        console.log(await DORToken.balanceOf(deployer.address));
+        console.log("DayOfRightsClubPackage.totalSupply()", await DayOfRightsClubPackage.totalSupply());
+        console.log("DayOfRightsClub.totalSupply()", await DayOfRightsClub.totalSupply());
+        console.log("DORToken.balanceOf", await DORToken.balanceOf(deployer.address));
+        console.log("available", await SmartDisPatchInitializable.available(DORToken.address, deployer.address));
     });
+
     it("setReferrer test", async function () {
+        //be partner
         await DayOfRightsReferral.partnerStake();
         for (let index = 0; index < 10; index++) {
             await DayOfRightsReferral.connect(users[index]).setReferrer(deployer.address);
         }
     });
-    it("function test", async function () {
+
+    it("shop function test", async function () {
         for (let index = 0; index < 10; index++) {
             await IFO.connect(users[index]).shop(1);
+            await IFO.connect(users[index]).collect();
         }
+    });
+    it("pendingreward test", async function () {
+        const poolAddress = await DayOfRightsClub.dispatchHandle();
+        //set pool
+        await DORToken.setNFTPool(poolAddress);
+
+        await UniswapV2Router02.connect(users[0]).swapExactTokensForTokensSupportingFeeOnTransferTokens(
+            expandTo18Decimals(10),
+            expandTo18Decimals(1),
+            [DORToken.address, USDT.address],
+            deployer.address,
+            Math.floor(Date.now() / 1000) + 100,
+        );
+        await UniswapV2Router02.connect(users[1]).swapExactTokensForTokensSupportingFeeOnTransferTokens(
+            expandTo18Decimals(10),
+            expandTo18Decimals(1),
+            [DORToken.address, USDT.address],
+            deployer.address,
+            Math.floor(Date.now() / 1000) + 100,
+        );
     });
 
     it("query after", async function () {
-        console.log(await DayOfRightsClubPackage.totalSupply());
-        console.log(await DayOfRightsClub.totalSupply());
-        console.log(await DORToken.balanceOf(deployer.address));
+        console.log("DayOfRightsClubPackage.totalSupply()", await DayOfRightsClubPackage.totalSupply());
+        console.log("DayOfRightsClub.totalSupply()", await DayOfRightsClub.totalSupply());
+        console.log("DORToken.balanceOf", await DORToken.balanceOf(users[3].address));
+        console.log(2222, await SmartDisPatchInitializable.balanceOf(deployer.address));
     });
 });

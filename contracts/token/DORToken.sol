@@ -451,15 +451,14 @@ contract DORToken is ERC20, Ownable {
         IFactory _factory,
         IRouter _router
     ) ERC20(_name, _symbol) {
+        console.log("constructor");
         _setupDecimals(_decimals);
-
         fund = _fund;
         lpReceiver = _lpReceiver;
         usdtToken = IERC20(_usdtToken);
 
         liquidity = _factory.createPair(_usdtToken, address(this));
         router = _router;
-
         rewardEndTime = block.timestamp.add(730 days);
         setRewardBlacklist(liquidity, true);
         setRewardBlacklist(address(this), true);

@@ -1,7 +1,20 @@
 require("@nomicfoundation/hardhat-toolbox");
-
-/** @type import('hardhat/config').HardhatUserConfig */
+const privateKey = require("../privateKey/IFO.json").key;
 module.exports = {
+    networks: {
+        ganache: {
+            url: "http://127.0.0.1:7545",
+        },
+        rinkeby: {
+            // url: "https://rinkeby.infura.io/v3/c7bae63096c74b3dad54ad7ae275df0c",
+            url: "https://rinkeby.infura.io/v3/c7bae63096c74b3dad54ad7ae275df0c",
+
+            accounts: [privateKey],
+            // gas: 2100000,
+            // gasPrice: 8000000000,
+            saveDeployments: true,
+        },
+    },
     solidity: {
         compilers: [
             {
@@ -86,5 +99,8 @@ module.exports = {
                 },
             },
         ],
+    },
+    mocha: {
+        timeout: 200000,
     },
 };

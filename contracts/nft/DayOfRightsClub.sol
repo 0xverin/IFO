@@ -5,15 +5,12 @@ pragma solidity 0.7.6;
 import "../core/SafeOwnable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "./SmartDisPatchInitializable.sol";
+import "hardhat/console.sol";
 
 //ERC721("Day of right club token", "DORCT"),
-contract DayOfRightsClub is
-    
-    ERC721("test", "DT"),
-    SafeOwnable
-{
+contract DayOfRightsClub is ERC721("test", "DT"), SafeOwnable {
     SmartDisPatchInitializable public dispatchHandle;
-    
+
     mapping(address => bool) public isMinner;
 
     event Mint(address account, uint256 tokenId);

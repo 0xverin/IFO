@@ -9,7 +9,6 @@ import "@openzeppelin/contracts/proxy/Initializable.sol";
 import "hardhat/console.sol";
 
 contract SmartDisPatchInitializable is Ownable, Initializable {
-    
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
@@ -50,6 +49,7 @@ contract SmartDisPatchInitializable is Ownable, Initializable {
     {
         require(msg.sender == SMART_DISPATCH_FACTORY, "Not factory");
         rewardTokens = rewardTokens_;
+
         for (uint256 i = 0; i != rewardTokens_.length; i++) {
             poolInfos[rewardTokens_[i]].rewardToken = IERC20(rewardTokens_[i]);
             poolInfos[rewardTokens_[i]].enable = true;
@@ -135,6 +135,7 @@ contract SmartDisPatchInitializable is Ownable, Initializable {
         if (totalSupply() == 0) {
             return pool.rewardLastStored;
         }
+
         return
             pool.rewardLastStored.add(
                 lastReward(pool).mul(1e18).div(totalSupply())
@@ -173,6 +174,7 @@ contract SmartDisPatchInitializable is Ownable, Initializable {
         returns (uint256)
     {
         PoolInfo storage pool = poolInfos[token];
+
         return
             balanceOf(account)
                 .mul(rewardPer(pool).sub(pool.userRewardStored[account]))
@@ -192,7 +194,6 @@ contract SmartDisPatchInitializable is Ownable, Initializable {
         pool.claimedReward[msg.sender] = pool.claimedReward[msg.sender].add(
             reward
         );
-
         pool.rewardToken.safeTransfer(msg.sender, reward);
         emit RewardPaid(msg.sender, token, reward);
     }
