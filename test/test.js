@@ -121,6 +121,7 @@ describe("DayOfRightsReferral", function () {
         await DayOfRightsClubPackage.addMinner(IFO.address);
         await DayOfRightsClubPackage.addMinner(DayOfRightsReferral.address);
         await DayOfRightsClub.addMinner(DayOfRightsReferral.address);
+        await DayOfRightsClub.addMinner(DayOfRightsClubPackage.address);
         await BlockhashMgr.setCaller(DayOfRightsClubPackage.address, true);
         await DayOfRightsReferral.setCaller(IFO.address, true);
 
@@ -187,6 +188,8 @@ describe("DayOfRightsReferral", function () {
     });
 
     it("query after", async function () {
+        await DayOfRightsClubPackage.openPackage(12);
+
         console.log("DayOfRightsClubPackage.totalSupply()", await DayOfRightsClubPackage.totalSupply());
         console.log("DayOfRightsClub.totalSupply()", await DayOfRightsClub.totalSupply());
         console.log("DORToken.balanceOf", await DORToken.balanceOf(users[3].address));

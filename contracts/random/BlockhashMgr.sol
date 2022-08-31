@@ -72,7 +72,6 @@ contract BlockhashMgr is IBlockhashMgr, SafeOwnable {
             }
             preBlockNum = blockNumber;
         }
-
         return blockInfo[blockNumber];
     }
 }

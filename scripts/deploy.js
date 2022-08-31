@@ -41,7 +41,7 @@ async function main() {
         UniswapV2Router02.address,
     );
     await DORToken.deployed();
-    console.log(22222222);
+
     const SmartDisPatchInitializableInstance = await ethers.getContractFactory("SmartDisPatchInitializable");
     SmartDisPatchInitializable = await SmartDisPatchInitializableInstance.deploy();
     await SmartDisPatchInitializable.deployed();
@@ -92,6 +92,17 @@ async function main() {
     console.log("DayOfRightsReferral :::::", DayOfRightsReferral.address);
     console.log("IFO :::::", IFO.address);
     console.log("PartnerReward :::::", PartnerReward.address);
+
+    // UniswapV2Factory  ::::: 0xc35dadb65012ec5796536bd9864ed8773abc74c4
+    // UniswapV2Router02 ::::: 0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506
+    // DORToken          ::::: 0x9EF3269f4FAE93569c57aaA0C35772eD2b2e9147
+    // SmartDisPatchInitializable ::::: 0x29B428a2e14CEe318144B6bd16F88a959eA010e4
+    // DayOfRightsClub ::::: 0x251b0b9bFF603E4b41075C07b36D5FB4560B888A
+    // BlockhashMgr ::::: 0x85830d8d9518F07831aaeB0171d4716Ce2EA2d36
+    // DayOfRightsClubPackage ::::: 0xC3735e34eA1E7fEe2a90cc04F77fF2555421d741
+    // DayOfRightsReferral ::::: 0x9C7d7B18D16269104F3B7180D1e6aeF6A29298Dd
+    // IFO ::::: 0xAA04147Fc930ddDC1Dc6b0bA06E1fcaF6d0b7d64
+    // PartnerReward ::::: 0x5419345C14d607Db8F671FAEB4e0C3f778BF5370
 
     console.log("--------------------deployed compelete------------------------");
 }

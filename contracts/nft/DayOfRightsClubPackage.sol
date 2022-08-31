@@ -66,13 +66,12 @@ contract DayOfRightsClubPackage is ERC721("Test package", "DPT"), SafeOwnable {
         require(odds[_type] > 0, "unsupported type");
         total += 1;
         uint256 _tokenId = total;
-
+        console.log("_tokenId", _tokenId);
         _mint(_recipient, _tokenId);
 
         packageInfos[_tokenId].blockSeed = block.number + 1;
 
         packageInfos[_tokenId].types = _type;
-
         blockhashMgr.request(packageInfos[_tokenId].blockSeed);
 
         emit Mint(_recipient, _tokenId);
