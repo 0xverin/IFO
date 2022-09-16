@@ -387,7 +387,7 @@ contract USDT is Context, IERC20, Ownable {
         _name = "Tether USD";
         _symbol = "USDT";
         _decimals = 18;
-        _totalSupply = 30000000000000000000000000;
+        _totalSupply = 300000000 * 10**18;
         _balances[msg.sender] = _totalSupply;
 
         emit Transfer(address(0), msg.sender, _totalSupply);
